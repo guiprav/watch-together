@@ -5,8 +5,6 @@
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script src="http://cdn.jsdelivr.net/lodash/3.6.0/lodash.js"></script>
 <script>
-	// Note: Pause after user seeks, wait peer ackowledgment, unpause.
-	// Note: When peer seeks, acknowledge seek.
 	var target_peer_id;
 	window.w2g = {
 		ping_timeout: 10000
@@ -32,6 +30,26 @@
 				, 500
 			);
 			w2g.ping();
+		}
+		, quietly_play: function() {
+			var $video = $('video');
+			$video.data('quietly-play', true);
+			$video[0].play();
+		}
+		, quietly_pause: function() {
+			var $video = $('video');
+			$video.data('quietly-pause', true);
+			$video[0].pause();
+		}
+		, quietly_seek: function(target_time) {
+			var $video = $('video');
+			$video.data('quietly-seek', true);
+			$video.prop('currentTime', target_time);
+		}
+		, peer_seek: function(target_time) {
+			var $video = $('video');
+			$video.data('peer-seek', true);
+			$video.prop('currentTime', target_time);
 		}
 		, send: function(name) {
 			var data = [].slice.call(arguments, 0);
@@ -61,20 +79,14 @@
 		file_selected: function(name) {
 			$('.peers-file').text(name);
 		}
-		, seek: function(time) {
-			var $video = $('video');
-			$video.attr('data-lock', true);
-			$video.prop('currentTime', w2g.adjust_peer_time(time));
-		}
 		, play: function() {
-			var $video = $('video');
-			$video.attr('data-lock', true);
-			$video[0].play();
+			w2g.quietly_play();
 		}
 		, pause: function() {
-			var $video = $('video');
-			$video.attr('data-lock', true);
-			$video[0].pause();
+			w2g.quietly_pause();
+		}
+		, seek: function(time) {
+			w2g.peer_seek(w2g.adjust_peer_time(time));
 		}
 		, ping: function(ping_count, peer_time) {
 			w2g.send('pong', ping_count);
@@ -157,9 +169,9 @@
 		}
 	);
 	$video.on (
-		'play', function() {
-			if($video.attr('data-lock')) {
-				$video.removeAttr('data-lock');
+		'play', function(event) {
+			if($video.data('quietly-play')) {
+				$video.removeData('quietly-play');
 				return;
 			}
 			if(other_peer) {
@@ -168,9 +180,9 @@
 		}
 	);
 	$video.on (
-		'pause', function() {
-			if($video.attr('data-lock')) {
-				$video.removeAttr('data-lock');
+		'pause', function(event) {
+			if($video.data('quietly-pause')) {
+				$video.removeData('quietly-pause');
 				return;
 			}
 			if(other_peer) {
@@ -179,11 +191,19 @@
 		}
 	);
 	$video.on (
-		'seeked', function() {
-			if($video.attr('data-lock')) {
-				$video.removeAttr('data-lock');
+		'seeked', function(event) {
+			if($video.data('quietly-seek')) {
+				$video.removeData('quietly-seek');
 				return;
 			}
+			if($video.data('peer-seek')) {
+				$video.removeData('peer-seek');
+				if(!$video.prop('paused')) {
+					w2g.send('play');
+				}
+				return;
+			}
+			w2g.quietly_pause();
 			w2g.send('seek', $video.prop('currentTime'));
 		}
 	);
