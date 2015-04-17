@@ -15,7 +15,9 @@
 				'data', function(data) {
 					var name = data[0];
 					var message_arguments = data.slice(1);
-					console.log("Message received:", name, message_arguments);
+					if(['ping', 'pong'].indexOf(name) === -1) {
+						console.log("Message received:", name, message_arguments);
+					}
 					w2g.message_handlers[name].apply(null, message_arguments);
 				}
 			);
@@ -31,9 +33,12 @@
 			);
 			w2g.ping();
 		}
-		, send: function() {
-			console.log("Message sent:", arguments);
-			other_peer.send([].slice.call(arguments, 0));
+		, send: function(name) {
+			var data = [].slice.call(arguments, 0);
+			if(['ping', 'pong'].indexOf(name) === -1) {
+				console.log("Message sent:", name, data.slice(1));
+			}
+			other_peer.send(data);
 		}
 		, ping: _.throttle (
 			function() {
