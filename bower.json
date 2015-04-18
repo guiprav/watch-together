@@ -1,0 +1,9 @@
+{
+  "name": "watch-together",
+  "private": true,
+  "dependencies": {
+    "lodash": "~3.7.0",
+    "jquery": "~2.1.3",
+    "peerjs": "~0.3.14"
+  }
+}
