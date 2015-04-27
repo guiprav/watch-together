@@ -4,6 +4,8 @@
   "dependencies": {
     "lodash": "~3.7.0",
     "jquery": "~2.1.3",
-    "peerjs": "~0.3.14"
+    "peerjs": "~0.3.14",
+    "bootstrap": "~3.3.4",
+    "open-sans": "~1.1.0"
   }
 }
