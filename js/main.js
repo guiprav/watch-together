@@ -48,7 +48,12 @@ $(function setupChatMessages() {
 			);
 			$this.val('');
 		}
-		$this.attr('value', $this.val());
+		if($this.val() !== '') {
+			$this.addClass('typing');
+		}
+		else {
+			$this.removeClass('typing');
+		}
 	});
 	$chatMessageInput.on('blur', function() {
 		var $this = $(this);

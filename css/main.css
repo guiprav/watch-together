@@ -47,8 +47,7 @@ body {
 	text-shadow: inherit;
 	background-color: transparent;
 }
-.chat-message-input:not([value]),
-.chat-message-input[value=''] {
+.chat-message-input:not(.typing) {
 	position: fixed;
 	left: -9999px;
 }
