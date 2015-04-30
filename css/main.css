@@ -78,7 +78,6 @@ body:not(:-moz-full-screen) .info-container .slider,
 	left: 50%;
 	top: 50%;
 	transform: translateX(-50%) translateY(-50%);
-	z-index: -1;
 }
 .video-container video {
 	max-width: 100%;
