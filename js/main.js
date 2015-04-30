@@ -22,8 +22,10 @@ executeSome ([
 		return aliasIfDefined(Element.prototype, 'webkitRequestFullscreen', 'requestFullscreen');
 	},
 ]);
-(function setupChatMessages() {
+$(function setupChatMessages() {
 	var messageDisplayDuration = 2000;
+	var $chatMessageList = $('.chat-message-list');
+	var $chatMessageInput = $('.chat-message-input');
 	setInterval(function() {
 		var oldestMessage = $('.chat-message').first();
 		var oldestTimestamp = oldestMessage.data('timestamp');
@@ -38,4 +40,21 @@ executeSome ([
 			});
 		}
 	}, 100);
-})();
+	$chatMessageInput.on('keyup', function(event) {
+		var $this = $(this);
+		if(event.which === 13) {
+			$chatMessageList.append(
+				$('<p>').addClass('chat-message').text($this.val())
+			);
+			$this.val('');
+		}
+		$this.attr('value', $this.val());
+	});
+	$chatMessageInput.on('blur', function() {
+		var $this = $(this);
+		setTimeout(function() {
+			$this.focus();
+		}, 0);
+	});
+	$chatMessageInput.focus();
+});

@@ -41,6 +41,17 @@ body {
 	border-radius: 4px;
 	background-color: rgba(0, 0, 0, 0.4);
 }
+.chat-message-input {
+	border: none;
+	padding: 0 20px;
+	text-shadow: inherit;
+	background-color: transparent;
+}
+.chat-message-input:not([value]),
+.chat-message-input[value=''] {
+	position: fixed;
+	left: -9999px;
+}
 .chat-message.fade-out {
 	margin-top: -56px;
 	opacity: 0;
