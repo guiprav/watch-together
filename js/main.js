@@ -22,6 +22,16 @@ executeSome ([
 		return aliasIfDefined(Element.prototype, 'webkitRequestFullscreen', 'requestFullscreen');
 	},
 ]);
+$(function setupVideoPlayer() {
+	var $body = $('body');
+	var $video = $('.video-container video');
+	$video.on('play', function() {
+		$body.addClass('playing-video');
+	});
+	$video.on('pause', function() {
+		$body.removeClass('playing-video');
+	});
+});
 $(function setupChatMessages() {
 	var messageDisplayDuration = 2000;
 	var $body = $('body');

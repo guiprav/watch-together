@@ -91,11 +91,11 @@ body:-webkit-full-screen .video-container video {
 	border-radius: 4px;
 	background-color: rgba(0, 0, 0, 0.8);
 }
-body:not(:-moz-full-screen) .info-container .slider,
+body:not(:-moz-full-screen):not(.playing-video) .info-container .slider,
 .info-container:hover .slider {
 	transform: translateX(0);
 }
-body:not(:-webkit-full-screen) .info-container .slider,
+body:not(:-webkit-full-screen):not(.playing-video) .info-container .slider,
 .info-container:hover .slider {
 	transform: translateX(0);
 }
