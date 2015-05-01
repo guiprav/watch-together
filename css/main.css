@@ -5,9 +5,14 @@ body {
 body {
 	font-family: 'Open Sans';
 	font-weight: 300;
-	font-size: 2vmin;
+	font-size: 1.1vmax;
 	color: #fefefe;
 	background-color: #282826;
+}
+@media (max-width: 1400px) {
+	body {
+		font-size: 16px;
+	}
 }
 .video-container {
 	display: inline-block;
@@ -44,7 +49,7 @@ body:-webkit-full-screen .video-container video {
 	pointer-events: none;
 }
 .chat-container {
-	font-size: 5vmin;
+	font-size: 2em;
 	font-weight: bold;
 	letter-spacing: 2px;
 	color: white;
