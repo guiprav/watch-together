@@ -104,8 +104,9 @@ body:not(:-webkit-full-screen):not(.playing-video) .info-container .slider,
 .info-container:hover .slider {
 	transform: translateX(0);
 }
-.info-container p:last-child {
-	margin-bottom: 0;
+body:not(.connected) .show-when-connected,
+body.connected .show-when-disconnected {
+	display: none;
 }
 .info-container .go-fullscreen-button {
 	width: 100%;

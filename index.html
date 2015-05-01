@@ -1,226 +1,69 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>Watch Together</title>
+<link rel="stylesheet" href="vendor/open-sans/css/open-sans.css">
+<link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" href="css/main.css">
 <script src="vendor/lodash/lodash.js"></script>
 <script src="vendor/jquery/dist/jquery.js"></script>
 <script src="vendor/peerjs/peer.js"></script>
-<script>
-	var target_peer_id;
-	if(window.location.href.startsWith("https:")) {
-		$(document).ready(function() {
-			document.body.innerHTML = (
-				"Due to PeerJS.com's bad SSL certificate, this application cannot run over HTTPS."
-				+ " <a href='http://n2liquid.github.io/watch-together/'>Go to the HTTP version</a>."
-			);
-		});
-	}
-	else {
-		window.w2g = {
-			ping_timeout: 10000
-			, setup: function() {
-				other_peer.on (
-					'data', function(data) {
-						var name = data[0];
-						var message_arguments = data.slice(1);
-						if(['ping', 'pong'].indexOf(name) === -1) {
-							console.log("Message received:", name, message_arguments);
-						}
-						w2g.message_handlers[name].apply(null, message_arguments);
-					}
-				);
-				setInterval (
-					function() {
-						var elapsed = performance.now() - other_peer.ping_timestamp;
-						if(elapsed > w2g.ping_timeout) {
-							console.log("Ping timed out after", elapsed + "ms.");
-							w2g.ping();
-						}
-					}
-					, 500
-				);
-				w2g.ping();
-				$('.your-file').change();
-			}
-			, quietly_play: function() {
-				var $video = $('video');
-				$video.data('quietly-play', true);
-				$video[0].play();
-			}
-			, quietly_pause: function() {
-				var $video = $('video');
-				$video.data('quietly-pause', true);
-				$video[0].pause();
-			}
-			, quietly_seek: function(target_time) {
-				var $video = $('video');
-				$video.data('quietly-seek', true);
-				$video.prop('currentTime', target_time);
-			}
-			, peer_seek: function(target_time) {
-				var $video = $('video');
-				$video.data('peer-seek', true);
-				$video.prop('currentTime', target_time);
-			}
-			, send: function(name) {
-				var data = [].slice.call(arguments, 0);
-				if(['ping', 'pong'].indexOf(name) === -1) {
-					console.log("Message sent:", name, data.slice(1));
-				}
-				other_peer.send(data);
-			}
-			, ping: _.throttle (
-				function() {
-					if(!other_peer.ping_count) {
-						other_peer.ping_count = 0;
-					}
-					other_peer.ping_timestamp = performance.now();
-					w2g.send('ping', ++other_peer.ping_count, $('video').prop('currentTime'));
-				}
-				, 500
-			)
-			, adjust_peer_time: function(time) {
-				if(time !== 0 && other_peer.roundtrip) {
-					time += other_peer.roundtrip / 2 / 1000;
-				}
-				return time;
-			}
-		};
-		w2g.message_handlers = {
-			file_selected: function(name) {
-				$('.peers-file').text(name);
-			}
-			, play: function() {
-				w2g.quietly_play();
-			}
-			, pause: function() {
-				w2g.quietly_pause();
-			}
-			, seek: function(time) {
-				w2g.peer_seek(w2g.adjust_peer_time(time));
-			}
-			, ping: function(ping_count, peer_time) {
-				var lag;
-				w2g.send('pong', ping_count);
-				if(!other_peer.roundtrip) {
-					w2g.ping();
-				}
-				if(peer_time !== null && peer_time !== other_peer.last_reported_time) {
-					other_peer.last_reported_time = peer_time;
-					peer_time = w2g.adjust_peer_time(peer_time);
-					$('.peer-time').text(peer_time);
-					lag = peer_time - $('video').prop('currentTime');
-					if(lag >= 0) {
-						lag = '+' + lag;
-					}
-					$('.lag').text(lag);
-				}
-			}
-			, pong: function(ping_count) {
-				if(ping_count < other_peer.ping_count) {
-					return;
-				}
-				w2g.ping();
-				other_peer.roundtrip = performance.now() - other_peer.ping_timestamp;
-				$('.ping').text(Math.round(other_peer.roundtrip));
-			}
-		};
-		window.peer = new Peer (
-			prompt("Who are you?")
-			, {
-				key: 'w3y11gzechy6i529'
-			}
-		);
-		window.other_peer = null;
-		peer.on (
-			'connection', function(other_peer) {
-				window.other_peer = other_peer;
-				w2g.setup();
-				alert(other_peer.peer + " has joined you.");
-			}
-		);
-		target_peer_id = prompt("Who's your peer? (Leave blank to wait for someone)");
-		if(target_peer_id !== '') {
-			window.other_peer = peer.connect(target_peer_id);
-			other_peer.on (
-				'open', function() {
-					w2g.setup();
-				}
-			);
-		}
-	}
-</script>
-<style>
-	video
-	{
-		display: block;
-		height: 720px;
-		margin: 0 auto;
-	}
-</style>
-<p>
-	Your file:
-	<input class="your-file" type="file" accept="video/*">
-</p>
-<p>
-	Peer's file: <span class="peers-file">None</span>
-</p>
-<p>
-	Peer's current playback time: <span class="peer-time">0</span>s
-	(<span class="lag">+0</span>s)
-</p>
-<p>
-	Ping: <span class="ping">0</span>ms
-</p>
-<video controls></video>
-<script>
-	var $your_file = $('.your-file');
-	var $video = $('video');
-	$your_file.change (
-		function() {
-			var file = this.files[0];
-			document.querySelector('video').src = URL.createObjectURL(file);
-			if(other_peer) {
-				w2g.send('file_selected', file.name);
-			}
-		}
-	);
-	$video.on (
-		'play', function(event) {
-			if($video.data('quietly-play')) {
-				$video.removeData('quietly-play');
-				return;
-			}
-			if(other_peer) {
-				w2g.send('play');
-			}
-		}
-	);
-	$video.on (
-		'pause', function(event) {
-			if($video.data('quietly-pause')) {
-				$video.removeData('quietly-pause');
-				return;
-			}
-			if(other_peer) {
-				w2g.send('pause');
-			}
-		}
-	);
-	$video.on (
-		'seeked', function(event) {
-			if($video.data('quietly-seek')) {
-				$video.removeData('quietly-seek');
-				return;
-			}
-			if($video.data('peer-seek')) {
-				$video.removeData('peer-seek');
-				if(!$video.prop('paused')) {
-					w2g.send('play');
-				}
-				return;
-			}
-			w2g.quietly_pause();
-			w2g.send('seek', $video.prop('currentTime'));
-		}
-	);
-</script>
+<script src="js/main.js"></script>
+<div class="video-container">
+	<video
+		src="http://clips.vorwaerts-gmbh.de/big_buck_bunny.webm"
+		controls>
+	</video>
+</div>
+<div class="overlays">
+	<div class="chat-container">
+		<div class="chat-message-list">
+		</div>
+		<input
+			class="chat-message-input"
+			type="text"
+			autofocus
+			autocomplete="off"
+		>
+	</div>
+	<div class="info-container">
+		<div class="slider">
+			<p>
+				Your file:
+				<button class="choose-file btn btn-sm btn-default">
+					Choose
+				</button>
+			</p>
+			<div class="show-when-disconnected">
+				<p>
+					Session URL:
+					<span class="session-url">
+						Connecting...
+					</span>
+				</p>
+			</div>
+			<div class="show-when-connected">
+				<p>
+					Peer's file:
+					<span class="peer-file">
+						None
+					</span>
+				</p>
+				<p>
+					Peer's playback time:
+					<span class="peer-time">0</span>s
+					(<span class="lag">+0</span>s)
+				</p>
+				<p>
+					Ping:
+					<span class="ping">0</span>ms
+				</p>
+			</div>
+			<input
+				class="go-fullscreen-button btn btn-sm btn-default"
+				type="button"
+				onclick="document.body.requestFullscreen()"
+				value="Go fullscreen!"
+			>
+		</div>
+	</div>
+</div>
