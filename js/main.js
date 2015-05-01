@@ -24,8 +24,10 @@ executeSome ([
 ]);
 $(function setupChatMessages() {
 	var messageDisplayDuration = 2000;
+	var $body = $('body');
 	var $chatMessageList = $('.chat-message-list');
 	var $chatMessageInput = $('.chat-message-input');
+	var mouseDown = false;
 	setInterval(function() {
 		var oldestMessage = $('.chat-message').first();
 		var oldestTimestamp = oldestMessage.data('timestamp');
@@ -55,8 +57,18 @@ $(function setupChatMessages() {
 			$this.removeClass('typing');
 		}
 	});
+	$body.on('mousedown', function() {
+		mouseDown = true;
+	});
+	$body.on('mouseup', function() {
+		$chatMessageInput.focus();
+		mouseDown = false;
+	});
 	$chatMessageInput.on('blur', function() {
 		var $this = $(this);
+		if(mouseDown) {
+			return;
+		}
 		setTimeout(function() {
 			$this.focus();
 		}, 0);
