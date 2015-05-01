@@ -39,6 +39,7 @@
 					, 500
 				);
 				w2g.ping();
+				$('.your-file').change();
 			}
 			, quietly_play: function() {
 				var $video = $('video');
@@ -78,7 +79,7 @@
 				, 500
 			)
 			, adjust_peer_time: function(time) {
-				if(other_peer.roundtrip) {
+				if(time !== 0 && other_peer.roundtrip) {
 					time += other_peer.roundtrip / 2 / 1000;
 				}
 				return time;
@@ -98,6 +99,7 @@
 				w2g.peer_seek(w2g.adjust_peer_time(time));
 			}
 			, ping: function(ping_count, peer_time) {
+				var lag;
 				w2g.send('pong', ping_count);
 				if(!other_peer.roundtrip) {
 					w2g.ping();
@@ -106,7 +108,11 @@
 					other_peer.last_reported_time = peer_time;
 					peer_time = w2g.adjust_peer_time(peer_time);
 					$('.peer-time').text(peer_time);
-					$('.lag').text(peer_time - $('video').prop('currentTime'));
+					lag = peer_time - $('video').prop('currentTime');
+					if(lag >= 0) {
+						lag = '+' + lag;
+					}
+					$('.lag').text(lag);
 				}
 			}
 			, pong: function(ping_count) {
@@ -160,7 +166,7 @@
 </p>
 <p>
 	Peer's current playback time: <span class="peer-time">0</span>s
-	(lag: <span class="lag">0</span>s)
+	(<span class="lag">+0</span>s)
 </p>
 <p>
 	Ping: <span class="ping">0</span>ms
