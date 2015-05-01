@@ -51,9 +51,7 @@
 		<div class="slider">
 			<p>
 				Your file:
-				<button
-					class="choose-file btn btn-xs btn-default"
-					onclick="document.body.requestFullscreen()">
+				<button class="choose-file btn btn-xs btn-default">
 					Choose
 				</button>
 			</p>
@@ -84,6 +82,12 @@
 					0ms
 				</span>
 			</p>
+			<input
+				class="go-fullscreen-button btn btn-sm btn-default"
+				type="button"
+				onclick="document.body.requestFullscreen()"
+				value="Go fullscreen!"
+			>
 		</div>
 	</div>
 </div>

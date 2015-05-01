@@ -102,3 +102,12 @@ body:not(:-webkit-full-screen):not(.playing-video) .info-container .slider,
 .info-container p:last-child {
 	margin-bottom: 0;
 }
+.info-container .go-fullscreen-button {
+	width: 100%;
+}
+body:-moz-full-screen .info-container .go-fullscreen-button {
+	display: none;
+}
+body:-webkit-full-screen .info-container .go-fullscreen-button {
+	display: none;
+}
