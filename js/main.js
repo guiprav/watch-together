@@ -63,7 +63,7 @@ $(function setupChatMessages() {
 		if(event.which === 13) {
 			w2g.sendChatMessage(message);
 			$chatMessageList.append(
-				$('<p>').addClass('chat-message').text(message)
+				$('<p>').addClass('chat-message').text("You: " + message)
 			);
 			$this.val('');
 		}
