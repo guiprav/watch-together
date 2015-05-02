@@ -51,10 +51,14 @@ $(function setupChatMessages() {
 			oldestMessage.data('timestamp', now);
 		}
 		else
-		if(now - oldestTimestamp > messageDisplayDuration && !oldestMessage.hasClass('fade-out')) {
-			oldestMessage.addClass('fade-out').on('transitionend', function() {
-				$(this).remove();
-			});
+		if(now - oldestTimestamp > messageDisplayDuration) {
+			if(!oldestMessage.hasClass('fade-out')) {
+				oldestMessage.addClass('fade-out');
+			}
+			else
+			if(oldestMessage.css('opacity') === '0') {
+				oldestMessage.remove();
+			}
 		}
 	}, 100);
 	$chatMessageInput.on('keyup', function(event) {
