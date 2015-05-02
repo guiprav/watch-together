@@ -94,6 +94,7 @@ $(function setupChatMessages() {
 });
 $(function setupWatchTogether() {
 	var targetPeerId = window.location.hash.slice(1);
+	window.history.replaceState('Object', 'Title', window.location.pathname);
 	if(window.location.href.startsWith("https:")) {
 		$(document).ready(function() {
 			document.body.innerHTML = (
