@@ -124,7 +124,16 @@ $(function setupWatchTogether() {
 				}
 				w2g.message_handlers[name].apply(null, message_arguments);
 			});
+			other_peer.on('close', function() {
+				w2g.logMessage("Your peer has gone away :(");
+				w2g.quietly_pause();
+				window.other_peer = null;
+				$body.removeClass('connected');
+			});
 			setInterval(function() {
+				if(!other_peer) {
+					return;
+				}
 				var elapsed = performance.now() - other_peer.ping_timestamp;
 				if(elapsed > w2g.ping_timeout) {
 					console.log("Ping timed out after", elapsed + "ms.");
@@ -159,6 +168,9 @@ $(function setupWatchTogether() {
 		}
 		, ping: _.throttle (
 			function() {
+				if(!other_peer) {
+					return;
+				}
 				if(!other_peer.ping_count) {
 					other_peer.ping_count = 0;
 				}
@@ -219,23 +231,29 @@ $(function setupWatchTogether() {
 	};
 	window.other_peer = null;
 	window.peer = new Peer({ key: 'w3y11gzechy6i529' });
-	if(!targetPeerId) {
-		peer.on (
-			'connection', function(other_peer) {
-				window.other_peer = other_peer;
-				w2g.setup();
-				w2g.logMessage("Your peer has joined you!");
-			}
+	peer.on('open', function(id) {
+		$('.session-url').empty().append(
+			$('<a onclick="return false">')
+				.attr('href', '#' + id)
+				.text("Share this with a friend!")
 		);
-		peer.on('open', function(id) {
-			$('.session-url').empty().append(
-				$('<a onclick="return false">')
-					.attr('href', '#' + id)
-					.text("Share this with a friend!")
-			);
-		});
-	}
-	else {
+	});
+	peer.on (
+		'connection', function(other_peer) {
+			if(window.other_peer) {
+				console.log (
+					other_peer.id,
+					"has tried to connect, but we are already connected to",
+					window.other_peer.id + "."
+				);
+				return;
+			}
+			window.other_peer = other_peer;
+			w2g.setup();
+			w2g.logMessage("Your peer has joined you!");
+		}
+	);
+	if(targetPeerId) {
 		window.other_peer = peer.connect(targetPeerId);
 		other_peer.on('open', function() {
 			w2g.setup();
