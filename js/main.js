@@ -42,7 +42,7 @@ $(function setupVideoPlayer() {
 	});
 });
 $(function setupChatMessages() {
-	var messageDisplayDuration = 2000;
+	var messageDisplayDuration = 4000;
 	setInterval(function() {
 		var oldestMessage = $('.chat-message').first();
 		var oldestTimestamp = oldestMessage.data('timestamp');
