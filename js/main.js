@@ -130,13 +130,19 @@ $(function setupWatchTogether() {
 				window.other_peer = null;
 				$body.removeClass('connected');
 			});
+			other_peer.timeOuts = 0;
 			setInterval(function() {
 				if(!other_peer) {
 					return;
 				}
 				var elapsed = performance.now() - other_peer.ping_timestamp;
 				if(elapsed > w2g.ping_timeout) {
-					console.log("Ping timed out after", elapsed + "ms.");
+					w2g.logMessage("Ping timed out after " + Math.floor(elapsed / 1000) + " seconds...");
+					++other_peer.timeOuts;
+					if(other_peer.timeOuts >= 2) {
+						other_peer.close();
+						return;
+					}
 					w2g.ping();
 				}
 			}, 500);
@@ -204,6 +210,7 @@ $(function setupWatchTogether() {
 		}
 		, ping: function(ping_count, peer_time) {
 			var lag;
+			other_peer.timeOuts = 0;
 			w2g.send('pong', ping_count);
 			if(!other_peer.roundtrip) {
 				w2g.ping();
