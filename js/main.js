@@ -268,6 +268,7 @@ $(function setupWatchTogether() {
 		window.other_peer = peer.connect(targetPeerId);
 		other_peer.on('open', function() {
 			w2g.setup();
+			w2g.send('ready');
 			w2g.logMessage("Peer connected!");
 		});
 	}
