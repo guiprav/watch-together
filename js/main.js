@@ -151,7 +151,26 @@ $(function setupWatchTogether() {
 				}
 			}, 500);
 			w2g.ping();
-			$('.your-file').change();
+		}
+		, chooseFile: function() {
+			var $input = (
+				$('<input type="file">')
+					.attr('accept', 'video/*')
+					.css('display', 'none')
+					.on('change', function() {
+						var $this = $(this);
+						var file = this.files[0];
+						$video.attr('src', URL.createObjectURL(file));
+						$video.data('file-name', file.name);
+						if(other_peer) {
+							w2g.send('file_selected', file.name);
+						}
+						$('.choose-file').text(file.name);
+						$this.remove();
+					})
+			);
+			$body.append($input);
+			$input.click();
 		}
 		, quietly_play: function() {
 			$video.data('quietly-play', true);
@@ -197,6 +216,12 @@ $(function setupWatchTogether() {
 		}
 	};
 	w2g.message_handlers = {
+		ready: function() {
+			var yourFile = $video.data('file-name');
+			if(yourFile) {
+				w2g.send('file_selected', yourFile);
+			}
+		},
 		chat_message: function(message) {
 			w2g.logMessage(message);
 		}
