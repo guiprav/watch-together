@@ -87,6 +87,7 @@ body:-webkit-full-screen .video-container video {
 	opacity: 0;
 }
 .info-container {
+	max-width: 460px;
 	pointer-events: auto;
 }
 .info-container .slider {
@@ -107,6 +108,9 @@ body:not(:-webkit-full-screen):not(.playing-video) .info-container .slider,
 body:not(.connected) .show-when-connected,
 body.connected .show-when-disconnected {
 	display: none;
+}
+.info-container .choose-file {
+	white-space: normal;
 }
 .info-container .go-fullscreen-button {
 	width: 100%;
