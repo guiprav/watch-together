@@ -315,8 +315,10 @@ $(function setupWatchTogether() {
 				}
 				return;
 			}
-			w2g.quietly_pause();
-			w2g.send('seek', $video.prop('currentTime'));
+			if(other_peer) {
+				w2g.quietly_pause();
+				w2g.send('seek', $video.prop('currentTime'));
+			}
 		}
 	);
 });
