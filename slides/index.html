@@ -1,0 +1,369 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Comunicação P2P arbitrária entre browsers</title>
+<link rel="stylesheet" href="vendor/open-sans/css/open-sans.css">
+<style>
+	* {
+		box-sizing: border-box;
+	}
+	html,
+	body {
+		height: 100%;
+	}
+	body {
+		margin: 0;
+		font-family: "Open Sans";
+		font-size: 4vmin;
+		color: white;
+		background-color: #2e3037;
+	}
+	:first-child {
+		margin-top: 0;
+	}
+	:last-child {
+		margin-bottom: 0;
+	}
+	h1 {
+		font-size: inherit;
+		font-weight: normal;
+	}
+	a:link,
+	a:visited,
+	a:hover,
+	a:active {
+		text-decoration: none;
+		color: inherit;
+	}
+	[id|="slide"] {
+		display: none;
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		border: 40px solid rgba(0, 0, 0, 0.2);
+		padding: 20px;
+	}
+	.active[id|="slide"] {
+		display: block;
+	}
+	.no-margin-top {
+		margin-top: 0;
+	}
+	.v-center {
+		position: relative;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	.t-center {
+		text-align: center;
+	}
+	.highlight {
+		color: #39c0ba;
+	}
+	.fullscreen[id|="iframe"],
+	.fullscreen[id|="editor"] {
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		height: 100vh !important;
+		z-index: 10;
+	}
+	.fullscreen[id|="iframe"] {
+		left: 50%;
+	}
+	.fullscreen[id|="editor"] {
+		right: 50%;
+	}
+</style>
+<script src="vendor/lodash/lodash.js"></script>
+<script src="vendor/ace-builds/src-noconflict/ace.js"></script>
+<script>
+	'use strict';
+	window.$ = document.querySelector.bind(document);
+	window.$$ = document.querySelectorAll.bind(document);
+	window.w2gs = {};
+	w2gs.keyCodes = {};
+	w2gs.keyCodes.left = 37;
+	w2gs.keyCodes.right = 39;
+	setInterval(function() {
+		var targetSlide = w2gs.targetSlide();
+		var activeSlide = w2gs.activeSlide();
+		if(targetSlide !== activeSlide) {
+			if(activeSlide) {
+				activeSlide.classList.remove('active');
+			}
+			if(targetSlide) {
+				targetSlide.classList.add('active');
+			}
+		}
+	}, 100);
+	document.addEventListener('keypress', function(event) {
+		console.log("Key pressed:", event);
+		switch(event.keyCode) {
+			case w2gs.keyCodes.left:
+				w2gs.previousSlide();
+				return;
+			case w2gs.keyCodes.right:
+				w2gs.nextSlide();
+				return;
+		}
+		switch(event.which) {
+			case '-':
+				console.log($('body').style.fontSize);
+				return;
+		}
+	});
+	w2gs.targetSlideId = function() {
+		return window.location.hash.slice(1) || 'slide-1';
+	};
+	w2gs.targetSlide = function() {
+		return document.getElementById(w2gs.targetSlideId());
+	};
+	w2gs.activeSlide = function() {
+		return $('.active[id|="slide"]');
+	};
+	w2gs.activeSlideId = function() {
+		var activeSlide = w2gs.activeSlide();
+		return activeSlide && activeSlide.id;
+	};
+	w2gs.slideIdAdd = function(id, value) {
+		var parseResult = /^slide-([0-9]+)$/.exec(id);
+		if(!parseResult) {
+			throw new Error("Unexpected slide ID: " + id);
+		}
+		return 'slide-' + (parseInt(parseResult[1]) + value);
+	};
+	w2gs.incrementSlideId = function(id) {
+		return w2gs.slideIdAdd(id, 1);
+	};
+	w2gs.decrementSlideId = function(id) {
+		return w2gs.slideIdAdd(id, -1);
+	};
+	w2gs.flipSlides = function(number) {
+		var nextSlideId = w2gs.slideIdAdd(w2gs.targetSlideId(), number);
+		var nextSlide = document.getElementById(nextSlideId);
+		console.log("Flipping", number, "slides.");
+		console.log("Moving to", nextSlideId + ".");
+		if(!nextSlide) {
+			console.log("No more slides.");
+			return;
+		}
+		window.location.hash = nextSlideId;
+	};
+	w2gs.nextSlide = function() {
+		w2gs.flipSlides(1);
+	};
+	w2gs.previousSlide = function() {
+		w2gs.flipSlides(-1);
+	};
+	document.addEventListener('DOMContentLoaded', function() {
+		_.times(2, function(i) {
+			var count = i + 1;
+			var editor = $('#editor-' + count);
+			var iframe = $('#iframe-' + count);
+			var aceEditor = ace.edit('editor-' + count);
+			aceEditor.renderer.setShowGutter(false);
+			aceEditor.setTheme('ace/theme/twilight');
+			aceEditor.getSession().setMode('ace/mode/html');
+			function updateIframe() {
+				iframe.srcdoc = '<style>body{font-size:40px;}</style>' + aceEditor.getValue();
+			}
+			updateIframe();
+			aceEditor.commands.addCommand ({
+				name: "Update Iframe",
+				bindKey: 'Ctrl-Enter',
+				exec: updateIframe,
+			});
+			aceEditor.commands.addCommand ({
+				name: "Go fullscreen",
+				bindKey: 'Ctrl-M',
+				exec: function() {
+					iframe.classList.toggle('fullscreen');
+					editor.classList.toggle('fullscreen');
+					aceEditor.resize();
+				},
+			});
+		});
+	});
+</script>
+<div id="slide-1" style="font-size:1.5em">
+	<div class="v-center">
+		<h1 class="t-center highlight" style="font-size:1.4em">
+			Comunicação P2P
+			<br>arbitrária entre browsers
+		</h1>
+		<p class="t-center">
+			Guilherme Vieira
+			<span style="font-size:0.8em">
+				<br>{ <a href="https://github.com/n2liquid">github.com/n2liquid</a> }
+			</span>
+		</p>
+	</div>
+</div>
+<div id="slide-2">
+	<div style="float:right; height:100%; margin:0 40px;">
+		<img src="image/p2p-network.svg" class="v-center" style="width: 500px; border-radius:100%; background-color:white;">
+	</div>
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		P2P?
+	</h1>
+	<p>
+		P2P significa <i>peer-to-peer</i>:
+		Uma arquitetura de rede
+		normalmente associada a compartilhamento de arquivos
+		(Emule, BitTorrent, etc).
+	</p>
+	<p>
+		<i>Peer</i> é uma palavra do inglês que significa "um igual";
+		alguém ou alguma coisa que não é por natureza superior ou inferior a outra.
+	</p>
+	<p>
+		Peers em uma rede P2P tem autonomia e direitos iguais.
+	</p>
+</div>
+<div id="slide-3">
+	<div style="float:right; height:100%; margin:0 40px;">
+		<img src="image/client-server-network.svg" class="v-center" style="width: 500px; border-radius:100%; background-color:white;">
+	</div>
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<p>
+		<i>Cliente-servidor</i> é o nome do modelo de comunicação predominante da web:
+		Navegadores são <i>clientes</i> e servidores web são... bem, servidores.
+	</p>
+	<p>
+		Nesse modelo, toda a comunicação que ocorre entre os usuários de um site
+		ou serviço passa primeiro por um servidor (ou um conjunto de servidores).
+	</p>
+	<p>
+		Os usuários são <i>peers</i> que acessam um site com o objetivo de se comunicar
+		com outros usuários, mas o servidor arbitra essas interações.
+	</p>
+</div>
+<div id="slide-4">
+	<div style="float:right; height:100%; margin:0 40px;">
+		<img src="image/client-server-network.svg" class="v-center" style="width: 500px; border-radius:100%; background-color:white;">
+	</div>
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<p>
+		No caso de servidores web,
+		os servidores não só arbitram a comunicação entre os peers,
+		mas também <i>servem</i> o código da aplicação
+		(HTML, CSS, JavaScript, etc)
+		para o navegador executar.
+	</p>
+	<p>
+		O navegador é apenas uma casca a ser preenchida com software
+		(normalmente proprietário)
+		vindo de algum servidor.
+	</p>
+	<p>
+		Naturalmente, servidores
+		<i>e seus operadores</i>
+		tem muito mais poder do que navegadores e,
+		por consequência, do que nós, <i>usuários</i>.
+	</p>
+</div>
+<div id="slide-5">
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<div class="t-center">
+		<img src="image/calf-cow.jpg" width="450px">
+		<p>
+			Se fôssemos gado,
+			<br>essa relação poderia ser considerada saudável...
+		</p>
+	</div>
+</div>
+<div id="slide-6">
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<p>
+		O modelo cliente-servidor é muito útil e poderoso,
+		mas concentra poder demais nas mãos dos operadores dos servidores.
+		Eles podem:
+	</p>
+	<ul>
+		<li>
+			Monitorar nossas comunicações e censurar usuários.
+		</li>
+		<li>
+			Impedir acesso baseado na nossa nacionalidade
+			(prática comum em jogos online e serviços de streaming).
+		</li>
+		<li>
+			Impedir o uso de software customizado,
+			já que o software é servido juntamente com o serviço prestado,
+			quase como uma venda casada.
+		</li>
+		<li>
+			Nos forçar atualizações de software desagradáveis.
+		</li>
+		<li>
+			Terminar o serviço a qualquer momento,
+			levando junto consigo qualquer comunidade criada em torno dele.
+		</li>
+	</ul>
+</div>
+<div id="slide-7">
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Então... Modelo cliente-servidor ou P2P?
+	</h1>
+	<p>
+		O modelo cliente-servidor não é sem seus méritos,
+		mas em vários casos ele não trás benefício algum para os usuários
+		ou para o desenvolvimento da aplicação.
+	</p>
+	<p>
+		Exemplos de aplicações que poderiam ser P2P,
+		mas que habitualmente utilizamos cliente-servidor
+		sem pensar duas vezes:
+	</p>
+	<ul>
+		<li>
+			Mensagens instantâneas.
+		</li>
+		<li>
+			Transferência de arquivos.
+		</li>
+		<li>
+			Editores colaborativos.
+		</li>
+		<li>
+			Plataformas educacionais.
+		</li>
+		<li>
+			Diversos tipos de jogos online (mesmo os que envolvem azar!)
+		</li>
+	</ul>
+</div>
+<div id="slide-8">
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Ok, mas P2P no browser?
+	</h1>
+	<p>
+		Sim, é possível, utilizando uma nova web API chamada WebRTC!
+	</p>
+	<div style="display:flex;">
+		<div style="width:50%;">
+			<pre id="editor-1" style="height:180px; font-size:inherit;">Frame 1</pre>
+		</div>
+		<iframe id="iframe-1" style="width:50%; border:none; background-color:white;">
+		</iframe>
+	</div>
+	<div style="display:flex; margin-top:10px;">
+		<div style="width:50%;">
+			<pre id="editor-2" style="height:180px; font-size:inherit;">Frame 2</pre>
+		</div>
+		<iframe id="iframe-2" style="width:50%; border:none; background-color:white;">
+		</iframe>
+	</div>
+</div>

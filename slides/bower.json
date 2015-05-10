@@ -1,0 +1,22 @@
+{
+  "name": "webrtc-data-channel-slides",
+  "version": "0.0.0",
+  "authors": [
+    "Guilherme Vieira <super.driver.512@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "open-sans": "~1.1.0",
+    "ace-builds": "~1.1.9",
+    "lodash": "~3.8.0"
+  }
+}
