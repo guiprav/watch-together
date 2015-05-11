@@ -61,8 +61,7 @@
 	.highlight {
 		color: #39c0ba;
 	}
-	.fullscreen[id|="iframe"],
-	.fullscreen[id|="editor"] {
+	#ex1-editor.fullscreen {
 		position: fixed;
 		left: 0;
 		top: 0;
@@ -70,12 +69,6 @@
 		bottom: 0;
 		height: 100vh !important;
 		z-index: 10;
-	}
-	.fullscreen[id|="iframe"] {
-		left: 50%;
-	}
-	.fullscreen[id|="editor"] {
-		right: 50%;
 	}
 </style>
 <script src="vendor/lodash/lodash.js"></script>
@@ -160,32 +153,50 @@
 		w2gs.flipSlides(-1);
 	};
 	document.addEventListener('DOMContentLoaded', function() {
-		_.times(2, function(i) {
-			var count = i + 1;
-			var editor = $('#editor-' + count);
-			var iframe = $('#iframe-' + count);
-			var aceEditor = ace.edit('editor-' + count);
-			aceEditor.renderer.setShowGutter(false);
-			aceEditor.setTheme('ace/theme/twilight');
-			aceEditor.getSession().setMode('ace/mode/html');
-			function updateIframe() {
-				iframe.srcdoc = '<style>body{font-size:40px;}</style>' + aceEditor.getValue();
-			}
-			updateIframe();
-			aceEditor.commands.addCommand ({
-				name: "Update Iframe",
-				bindKey: 'Ctrl-Enter',
-				exec: updateIframe,
+		var editor = $('#ex1-editor');
+		var iframes = $$('.ex1-iframe');
+		var aceEditor = ace.edit(editor.id);
+		aceEditor.renderer.setShowGutter(false);
+		aceEditor.setTheme('ace/theme/twilight');
+		aceEditor.getSession().setMode('ace/mode/html');
+		function updateIframes() {
+			[].forEach.call(iframes, function(iframe) {
+				iframe.srcdoc = (
+					'<style>'
+						+ 'body {'
+							+ 'transform: scale(1.4);'
+							+ 'transform-origin: 0 0;'
+							+ 'box-sizing: border-box;'
+							+ 'max-width: 50%;'
+							+ 'margin: 0;'
+							+ 'padding: 10px;'
+							+ 'font-size: 20px'
+						+ '}'
+						+ 'input {'
+							+ 'font-size: inherit;'
+						+ '}'
+					+ '</style>'
+					+ '<script>'
+						+ 'window.$ = document.querySelector.bind(document);'
+						+ 'window.$$ = document.querySelectorAll.bind(document);'
+					+ '</' + 'script>'
+					+ aceEditor.getValue()
+				);
 			});
-			aceEditor.commands.addCommand ({
-				name: "Go fullscreen",
-				bindKey: 'Ctrl-M',
-				exec: function() {
-					iframe.classList.toggle('fullscreen');
-					editor.classList.toggle('fullscreen');
-					aceEditor.resize();
-				},
-			});
+		}
+		updateIframes();
+		aceEditor.commands.addCommand ({
+			name: "Update Iframe",
+			bindKey: 'Ctrl-Enter',
+			exec: updateIframes,
+		});
+		aceEditor.commands.addCommand ({
+			name: "Go fullscreen",
+			bindKey: 'Ctrl-M',
+			exec: function() {
+				editor.classList.toggle('fullscreen');
+				aceEditor.resize();
+			},
 		});
 	});
 </script>
@@ -353,17 +364,86 @@
 		Sim, é possível, utilizando uma nova web API chamada WebRTC!
 	</p>
 	<div style="display:flex;">
-		<div style="width:50%;">
-			<pre id="editor-1" style="height:180px; font-size:inherit;">Frame 1</pre>
+		<div style="width:33%;">
+			<pre id="ex1-editor" style="height:320px; font-size:inherit;">&lt;script src="vendor/peerjs/peer.js">&lt;/script>
+
+Minha ID: &lt;span id="minha-id">&lt;/span>
+
+&lt;br>
+
+&lt;input
+    id="id-peer"
+    placeholder="ID do Peer"
+    onkeyup="p2p.idPeer = this.value"
+>
+
+&lt;input
+    type="button"
+    value="Conectar"
+    onclick="p2p.conectar()"
+>
+
+&lt;br>
+
+&lt;input
+    id="mensagem"
+    placeholder="Escreva aqui!"
+    onkeyup="p2p.mensagem = this.value"
+>
+
+&lt;input
+    type="button"
+    value="Enviar"
+    onclick="p2p.enviar()"
+>
+
+&lt;div id="mensagens">&lt;/div>
+
+&lt;script>
+    function mostrar(mensagem) {
+        var mensagens = $('#mensagens');
+        mensagens.innerHTML = (
+            mensagem + '&lt;br>' + mensagens.innerHTML
+        );
+    }
+    
+    window.p2p = {};
+    
+    p2p.conectar = function() {
+        mostrar('Conectando a ' + p2p.idPeer + '...');
+        
+        p2p.peer = p2p.eu.connect(p2p.idPeer);
+        
+        p2p.peer.on('open', function() {
+            mostrar('Conectado!');
+        });
+        
+        p2p.peer.on('data', mostrar);
+    };
+    
+    p2p.enviar = function() {
+        mostrar(p2p.mensagem);
+        p2p.peer.send(p2p.mensagem);
+        p2p.mensagem = '';
+        $('#mensagem').value = '';
+    };
+    
+    p2p.eu = new Peer({ key: 'w3y11gzechy6i529' });
+    
+    p2p.eu.on('open', function(id) {
+        $('#minha-id').textContent = id;
+    });
+    
+    p2p.eu.on('connection', function(conexao) {
+        p2p.peer = conexao;
+        mostrar(conexao.peer + ' conectou!');
+        conexao.on('data', mostrar);
+    });
+&lt;/script></pre>
 		</div>
-		<iframe id="iframe-1" style="width:50%; border:none; background-color:white;">
+		<iframe class="ex1-iframe" style="width:33%; border:none; background-color:white;">
 		</iframe>
-	</div>
-	<div style="display:flex; margin-top:10px;">
-		<div style="width:50%;">
-			<pre id="editor-2" style="height:180px; font-size:inherit;">Frame 2</pre>
-		</div>
-		<iframe id="iframe-2" style="width:50%; border:none; background-color:white;">
+		<iframe class="ex1-iframe" style="width:33%; border:none; background-color:white;">
 		</iframe>
 	</div>
 </div>
