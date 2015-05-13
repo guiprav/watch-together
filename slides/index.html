@@ -349,7 +349,7 @@
 			Editores colaborativos.
 		</li>
 		<li>
-			Plataformas educacionais.
+			Plataformas de ensino à distância.
 		</li>
 		<li>
 			Diversos tipos de jogos online (mesmo os que envolvem azar!)
@@ -361,11 +361,44 @@
 		Ok, mas P2P no browser?
 	</h1>
 	<p>
-		Sim, é possível, utilizando uma nova web API chamada WebRTC!
+		Sim! Através de um padrão WebRTC:
 	</p>
+	<ul>
+		<li>
+			Iniciativa do Google para o Hangouts.
+		</li>
+		<li>
+			Originalmente projetado pra áudio e vídeo.
+		</li>
+		<li>
+			Mas, por onde passa áudio e vídeo, passa qualquer tipo de dado...
+		</li>
+		<li>
+			Strings (JSON), protocolos binários (Protobuf, BSON...) e até arquivos inteiros de qualquer formato.
+		</li>
+		<li>
+			A API pra esse tipo de comunicação é chamada <b>Data Channels</b>.
+		</li>
+	</ul>
+</div>
+<div id="slide-9">
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Processo de conexão
+	</h1>
+	<div class="t-center">
+		<img src="image/webrtc-peer-connection.png" style="border-radius:20px; border:10px solid grey;" height="300px">
+	</div>
+	<div class="t-center" style="margin-top:40px;">
+		<img src="image/webrtc-peer-communication.png" style="border-radius:20px; border:10px solid #39c0ba;" height="140px">
+	</div>
+</div>
+<div id="slide-10">
+	<h1 class="no-margin-top" style="font-size:1.5em">
+		Exemplo utilizando PeerJS
+	</h1>
 	<div style="display:flex;">
 		<div style="width:33%;">
-			<pre id="ex1-editor" style="height:320px; font-size:inherit;">&lt;script src="vendor/peerjs/peer.js">&lt;/script>
+			<pre id="ex1-editor" style="height:400px; font-size:inherit;">&lt;script src="vendor/peerjs/peer.js">&lt;/script>
 
 Minha ID: &lt;span id="minha-id">&lt;/span>
 
