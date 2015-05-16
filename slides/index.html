@@ -603,7 +603,21 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
         $('#mensagem').value = '';
     };
     
-    p2p.eu = new Peer({ key: 'w3y11gzechy6i529' });
+    p2p.eu = new Peer ({
+        key: 'w3y11gzechy6i529',
+        config: {
+            iceServers: [
+                {
+                    url: "turn:numb.viagenie.ca",
+                    credential: "webrtcdemo",
+                    username: "louis%40mozilla.com",
+                },
+            ],
+        },
+        //host: 'localhost',
+        //port: 9000,
+        //path: '/',
+    });
     
     p2p.eu.on('open', function(id) {
         $('#minha-id').textContent = id;
