@@ -236,13 +236,13 @@
 				iframe.srcdoc = (
 					'<style>'
 						+ 'body {'
-							+ 'transform: scale(1.4);'
+							+ 'transform: scale(2);'
 							+ 'transform-origin: 0 0;'
 							+ 'box-sizing: border-box;'
 							+ 'max-width: 50%;'
 							+ 'margin: 0;'
 							+ 'padding: 10px;'
-							+ 'font-size: 20px'
+							+ 'font-size: 14px'
 						+ '}'
 						+ 'input {'
 							+ 'font-size: inherit;'
@@ -546,7 +546,6 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
 &lt;input
     id="id-peer"
     placeholder="ID do Peer"
-    onkeyup="p2p.idPeer = this.value"
 >
 
 &lt;input
@@ -560,7 +559,6 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
 &lt;input
     id="mensagem"
     placeholder="Escreva aqui!"
-    onkeyup="p2p.mensagem = this.value"
 >
 
 &lt;input
@@ -582,9 +580,11 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
     window.p2p = {};
     
     p2p.conectar = function() {
-        mostrar('Conectando a ' + p2p.idPeer + '...');
+        var idPeer = $('#id-peer').value;
         
-        p2p.peer = p2p.eu.connect(p2p.idPeer);
+        mostrar('Conectando a ' + idPeer + '...');
+        
+        p2p.peer = p2p.eu.connect(idPeer);
         
         p2p.peer.on('open', function() {
             mostrar('Conectado!');
@@ -594,8 +594,11 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
     };
     
     p2p.enviar = function() {
-        mostrar(p2p.mensagem);
-        p2p.peer.send(p2p.mensagem);
+        var mensagem = $('#mensagem').value;
+        
+        mostrar(mensagem);
+        p2p.peer.send(mensagem);
+        
         p2p.mensagem = '';
         $('#mensagem').value = '';
     };
