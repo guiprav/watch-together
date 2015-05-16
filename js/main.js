@@ -266,7 +266,21 @@ $(function setupWatchTogether() {
 		}
 	};
 	window.other_peer = null;
-	window.peer = new Peer({ key: 'w3y11gzechy6i529' });
+	window.peer = new Peer ({
+		key: 'w3y11gzechy6i529',
+		config: {
+            iceServers: [
+                {
+                    url: "turn:numb.viagenie.ca",
+                    credential: "webrtcdemo",
+                    username: "louis%40mozilla.com",
+                },
+            ],
+        },
+        //host: 'localhost',
+        //port: 9000,
+        //path: '/',
+	});
 	peer.on('open', function(id) {
 		$('.session-url').empty().append(
 			$('<a onclick="return false">')
