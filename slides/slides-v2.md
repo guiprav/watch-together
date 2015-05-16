@@ -11,6 +11,9 @@
 	* Peers em uma rede P2P tem autonomia e direitos iguais.
 
 * Slide 2:
+	[p2p-network.png]
+
+* Slide 3:
 	* P2P em browsers hoje é possível graças a uma tecnologia chamada WebRTC, que é o foco dessa palestra.
 	* Nós vamos chegar no WebRTC. Mas, primeiro, vale a pena focar um pouquinho em como P2P difere da nossa forma habitual de trabalho.
 
@@ -24,6 +27,9 @@
 		* Não precisamos de conhecimento prévio ou de programas pré-instalados pra vivermos novas experiências através de nossos navegadores, e isso é ótimo.
 
 * Slide 4:
+	* [client-server-network.png]
+
+* Slide 5:
 	* Mas, hoje, a web é uma plataforma com muito mais funções do que o simples acesso a websites.
 	* Muitos sites são, na verdade, aplicativos que conectam pessoas e processam dados (ou seja, software clássico).
 	* Ou seja, diversos sites desempenham funções que não são novidade pra nós. Não estamos mais explorando nada; apenas jogando fora nossas antigas ferramentas de comunicação e computação e confiando na presença de websites que nos servem software semelhante.
@@ -31,10 +37,10 @@
 	* Os operadores desses servidores tem muito poder sobre nossas vidas, e esse poder não para de crescer.
 	* E aparentemente eu não sou o único a pensar isso, considerando essa imagem que eu achei na Internet...
 
-* Slide 5:
+* Slide 6:
 	* [cow-catle.jpg]
 
-* Slide 6:
+* Slide 7:
 	* Por isso, qualquer coisa que nos dê um pouco mais de independência sem a necessidade de migrar pra uma plataforma inferior é algo que eu considero muito bem-vindo e que me chama muito a atenção. WebRTC é uma dessas coisas.
 	* Unindo-se WebRTC com plataformas como NW.js, que permite o desenvolvimento de aplicativos desktop utilizando apenas tecnologias web e NodeJS, é possível obter um fluxo de desenvolvimento muito familiar a desenvolvedores web, mas sem os problemas aos quais o modelo cliente-servidor pode sujeitar (e sujeita!) seus usuários, como:
 		* Violações de privacidade.
@@ -44,7 +50,7 @@
 		* Término de serviço.
 		* Etc.
 
-* Slide 7:
+* Slide 8:
 	* Estes slides estão sendo servidos pelo GitHub.
 	* Pra quem não sabe, o GitHub permite a hospedagem de páginas como essas, mas não permite qualquer forma de processamento do lado do servidor.
 	* Em outras palavras, ele não executa código Node, PHP, Ruby, etc... Ele apenas serve arquivos estáticos, como HTML, CSS, JavaScript, imagens, etc.
@@ -53,21 +59,21 @@
 	* Sendo assim, é possível criar um sistema de chat e hospedá-lo no GitHub.
 	* Pra isso é necessário bem pouco código, então que tal tentarmos fazer isso?
 
-* Slide 8:
+* Slide 9:
 	* [Live coding do sistema de chat]
 
-* Slide 9:
+* Slide 10:
 	* A bem da verdade, se pegássemos esse código, colocássemos em um simples arquivo HTML e enviássemos por email pra um amigo, poderíamos conversar com ele do mesmo jeito. Nada de se preocupar com servidores ou hospedagens.
 	* Ótimo pra quem tá aprendendo, quer arriscar fazer um aplicativo online, que conecta pessoas de verdade, mas que ainda se confunde com Nodes, NPMs, Expresses ou, Deus proteja, LAMPs / WAMPs da vida...
 
-* Slide 10:
+* Slide 11:
 	* Como isso funciona?
 	* Na verdade, mesmo que enviássemos o arquivo HTML pra um amigo, pelo menos dois servidores estariam sendo utilizados pra nos auxiliar a abrir nossa conexão P2P.
 	* O primeiro é um servidor do PeerJS, que é chamado de "servidor de sinalização".
 	* Os servidores de sinalização são como pontos de encontro pra usuários que gostariam de iniciar conexões P2P.
 	* Normalmente, os clientes dos servidores de sinalização recebem uma ID que pode ser usada por outros usuários pra iniciar conexões.
 
-* Slide 11:
+* Slide 12:
 	* Além do servidor de sinalização, é necessário outro servidor que auxilia peers a se conectarem: O servidor STUN.
 	* Devido ao número limitado de endereços IPv4 disponíveis, nem todos os dispositivos conectados à Internet possuem um endereço IPv4 único.
 	* Em redes domésticas, por exemplo, é extremamente comum o roteador possuir um endereço externo a ser compartilhado por todos os computadores conectados àquela rede local.
@@ -76,32 +82,54 @@
 	* Por exemplo, se Fulano acessou o site XXX (Fulano safado!), o roteador sabe que deve encaminhar a resposta de suas requisições, vindas de fora, pro endereço interno de Fulano.
 	* Esse gerenciamento se chama NAT (Network Address Translation).
 
-* Slide 12:
+* Slide 13:
 	* Infelizmente, ele só funciona de maneira automática quando a conexão é originária de dentro da rede local.
 	* Se uma mensagem completamente nova chega de fora da rede ao roteador, como ele vai saber pra qual endereço interno repassar aquela mensagem?
 	* A menos que você tenha configurado o seu roteador manualmente, associando um protocolo e porta específicos a um endereço interno, o roteador simplesmente não tem como saber pra quem repassar aquela mensagem.
-	* O que os servidores STUN fazem é coordenar dois peers de forma que eles enviem pacotes com o timing necessário pra "perfurar o NAT".
+	* O que os servidores STUN fazem é ajudar dois peers a se coordenarem de forma que eles enviem pacotes com o timing e configurações necessárias pra "perfurar o NAT".
 	* O NAT é capaz de se autoconfigurar quando um programa da rede local envia a primeira mensagem de uma conexão, então se ambos os peers enviarem mensagens mais ou menos ao mesmo tempo, a conexão é estabelecida.
 	* Essas técnicas são bem antigas. Foram empregadas há muito tempo por software de VoIP e algumas bibliotecas de networkin pra jogos (RakNet é uma), mas é a primeira vez que elas são acessíveis a páginas web.
 	* O servidor STUN padrão do PeerJS é um servidor STUN gratuito do Google.
 
-* Slide 13:
-	* O processo de conexão consiste em duas pessoas conectando-se a um mesmo servidor de sinalização, através do qual eles descobrem o endereço IP uma da outra e trocam chaves criptográficas.
-	* Depois, elas se conectam a um servidor STUN pra efetivamente abrir a conexão.
+* Slide 14:
+	* O processo de conexão consiste em duas pessoas conectando-se a um servidor STUN que as auxilia a descobrir seus endereços IP externos e características do NAT.
+	* Depois, elas se conectam a um mesmo servidor de sinalização, através do qual elas trocam entre si essas informações, além de endereços IP internos e chaves criptográficas.
+	* Após decidir o melhor caminho pra abrir a conexão (através de uma LAN, se possível), a conexão é estabelecida.
 	* A partir daí, as mensagens trocadas entre elas são completamente P2P.
 	* O processo pode ser repetido diversas vezes pra criar swarms como aqueles vistos em transferências BitTorrent.
 	* E falando em BitTorrent, alguém inclusive já implementou um cliente BitTorrent 100% web-based utilizando WebRTC: Ele se chama WebTorrent!
 
-* Slide 14:
+* Slide 15:
 	* O padrão WebRTC foi uma iniciativa do Google pra viabilizar a implementação do Hangouts sem a necessidade de plugins de navegador.
 	* Sendo assim, o foco sempre foi em comunicação em tempo real de áudio e vídeo.
 	* Apesar disso, felizmente, a W3C viu o potencial da tecnologia além dessa aplicação inicial e padronizou também uma API chamada WebRTC Data Channels.
 	* É através delas que a transferência de dados arbitrários, como strings ou dados binários quaisquer, podem ser realizadas.
 
-* Slide 15:
-	* Através dessas APIs, é possível não só transferir áudio e vídeo, como também implementar:
+* Slide 16:
+	* Além do benefício de poder criar aplicativos web interessantes sem precisar implementar e manter servidores, WebRTC também traz os seguintes benefícios:
+		* A menor latência possível entre usuários.
+		* Uso reduzido da banda do servidor (se é que sua aplicação é hospedada em um).
+		* Possivelmente (mas não necessariamente) maior privacidade.
+		* Transporte configurável - É possível especificar:
+			* Se o navegador deve garantir que as mensagens cheguem em ordem.
+			* O tempo limite pro navegador enviar novas mensagens enquanto aguarda confirmações de recebimento de mensagens antigas.
+			* A quantidade de vezes que o navegador deve tentar retransmitir uma mensagem cujo recebimento não foi confirmado pelo peer.
+		* Essas opções de configuração são muito importantes pra aplicações de tempo real, como jogos.
+
+* Slide 17:
+	* Utilizando WebRTC Data Channels, é possível não só transferir áudio e vídeo, como também implementar:
 		* Mensagens instantâneas.
 		* Compartilhamento de arquivos de qualquer tipo.
 		* Editores colaborativos (de texto, imagens, áudio, vídeo, ou o que for!)
 		* Plataformas de ensino à distância.
 		* Não todos, mas diversos tipos de jogos online (mesmo os que envolvem azar!)
+		* Aceleradores de download e CDNs utilizando mecanismos similares ao WebTorrent.
+
+* Slide 18:
+	* Eu, particularmente, criei um player de vídeo rudimentar através do qual dois peers escolhem um arquivo de vídeo previamente baixado e o player sincroniza o playback, além de permitir o envio de mensagens instantâneas:
+	* [Mostrar o Watch Together].
+	* Eu não teria pensado em criar isso se não fosse pelo WebRTC.
+	* Eu ficaria com preguiça de criar um servidor só pra isso e achar uma hospedagem.
+	* Além disso, a latência reduzida facilita a sincronização do vídeo.
+	* Gostaria de finalizar minha apresentação convidando vocês a pensar quantas coisas legais vocês não poderiam criar utilizando WebRTC.
+	* Obrigado!
