@@ -34,18 +34,11 @@
 		text-decoration: none;
 		color: inherit;
 	}
-	[id|="slide"] {
-		display: none;
-		position: fixed;
-		left: 0;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		border: 40px solid rgba(0, 0, 0, 0.2);
-		padding: 20px;
+	li + li {
+		margin-top: 5vh;
 	}
-	.active[id|="slide"] {
-		display: block;
+	.inline-block {
+		display: inline-block;
 	}
 	.no-margin-top {
 		margin-top: 0;
@@ -58,8 +51,25 @@
 	.t-center {
 		text-align: center;
 	}
+	.bright-round-bg {
+		border-radius: 100%;
+		background-color: lightgrey;
+	}
 	.highlight {
 		color: #39c0ba;
+	}
+	[id|="slide"] {
+		display: none;
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		border: 40px solid rgba(0, 0, 0, 0.2);
+		padding: 20px;
+	}
+	.active[id|="slide"] {
+		display: block;
 	}
 	#ex1-editor.fullscreen {
 		position: fixed;
@@ -78,23 +88,35 @@
 	window.$ = document.querySelector.bind(document);
 	window.$$ = document.querySelectorAll.bind(document);
 	window.w2gs = {};
+</script>
+<script>
+	'use strict';
+	document.addEventListener('DOMContentLoaded', function() {
+		[].forEach.call($$('.slide'), function(slide, i) {
+			slide.id = 'slide-' + i;
+		});
+	});
+</script>
+<script>
+	'use strict';
 	w2gs.keyCodes = {};
 	w2gs.keyCodes.left = 37;
 	w2gs.keyCodes.right = 39;
-	setInterval(function() {
-		var targetSlide = w2gs.targetSlide();
-		var activeSlide = w2gs.activeSlide();
-		if(targetSlide !== activeSlide) {
-			if(activeSlide) {
-				activeSlide.classList.remove('active');
+	document.addEventListener('DOMContentLoaded', function() {
+		setInterval(function() {
+			var targetSlide = w2gs.targetSlide();
+			var activeSlide = w2gs.activeSlide();
+			if(targetSlide !== activeSlide) {
+				if(activeSlide) {
+					activeSlide.classList.remove('active');
+				}
+				if(targetSlide) {
+					targetSlide.classList.add('active');
+				}
 			}
-			if(targetSlide) {
-				targetSlide.classList.add('active');
-			}
-		}
-	}, 100);
+		}, 100);
+	});
 	document.addEventListener('keypress', function(event) {
-		console.log("Key pressed:", event);
 		switch(event.keyCode) {
 			case w2gs.keyCodes.left:
 				w2gs.previousSlide();
@@ -110,7 +132,7 @@
 		}
 	});
 	w2gs.targetSlideId = function() {
-		return window.location.hash.slice(1) || 'slide-1';
+		return window.location.hash.slice(1) || 'slide-0';
 	};
 	w2gs.targetSlide = function() {
 		return document.getElementById(w2gs.targetSlideId());
@@ -200,7 +222,7 @@
 		});
 	});
 </script>
-<div id="slide-1" style="font-size:1.5em">
+<div class="slide" style="font-size:1.5em">
 	<div class="v-center">
 		<h1 class="t-center highlight" style="font-size:1.4em">
 			Comunicação P2P
@@ -214,187 +236,254 @@
 		</p>
 	</div>
 </div>
-<div id="slide-2">
-	<div style="float:right; height:100%; margin:0 40px;">
-		<img src="image/p2p-network.svg" class="v-center" style="width: 500px; border-radius:100%; background-color:white;">
-	</div>
-	<h1 class="no-margin-top" style="font-size:1.5em">
+<div class="slide">
+	<h1 style="font-size:1.5em">
 		P2P?
 	</h1>
-	<p>
-		P2P significa <i>peer-to-peer</i>:
-		Uma arquitetura de rede
-		normalmente associada a compartilhamento de arquivos
-		(Emule, BitTorrent, etc).
-	</p>
-	<p>
-		<i>Peer</i> é uma palavra do inglês que significa "um igual";
-		alguém ou alguma coisa que não é por natureza superior ou inferior a outra.
-	</p>
-	<p>
-		Peers em uma rede P2P tem autonomia e direitos iguais.
-	</p>
+	<ul>
+		<li>
+			P2P = Peer-To-Peer.
+		</li>
+		<li>
+			Normalmente associado a compartilhamento de arquivos
+			(Emule, BitTorrent, etc).
+		</li>
+		<li>
+			<i>Peer</i> significa "um igual", em inglês.
+		</li>
+		<li>
+			Peers normalmente são autônomos,
+			tem direitos iguais
+			e executam software equivalente.
+		</li>
+	</ul>
 </div>
-<div id="slide-3">
-	<div style="float:right; height:100%; margin:0 40px;">
-		<img src="image/client-server-network.svg" class="v-center" style="width: 500px; border-radius:100%; background-color:white;">
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		P2P?
+	</h1>
+	<div class="t-center" style="margin-top:80px;">
+		<span class="inline-block bright-round-bg" style="width:500px;">
+			<img src="image/p2p-network.svg" height="500px">
+		</span>
 	</div>
-	<h1 class="no-margin-top" style="font-size:1.5em">
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		P2P?
+	</h1>
+	<ul>
+		<li>
+			Possível graças ao padrão WebRTC.
+		</li>
+		<li>
+			Chegaremos lá, mas antes...
+		</li>
+		<li>
+			Que modelo de conectividade usamos normalmente?
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
 		Modelo cliente-servidor
 	</h1>
-	<p>
-		<i>Cliente-servidor</i> é o nome do modelo de comunicação predominante da web:
-		Navegadores são <i>clientes</i> e servidores web são... bem, servidores.
-	</p>
-	<p>
-		Nesse modelo, toda a comunicação que ocorre entre os usuários de um site
-		ou serviço passa primeiro por um servidor (ou um conjunto de servidores).
-	</p>
-	<p>
-		Os usuários são <i>peers</i> que acessam um site com o objetivo de se comunicar
-		com outros usuários, mas o servidor arbitra essas interações.
-	</p>
+	<ul>
+		<li>
+			Modelo de conectividade padrão da web.
+		</li>
+		<li>
+			Acessar sites = Localizar um servidor e fazer uma requisição.
+		</li>
+		<li>
+			Respostas não são apenas dados, mas software.
+		</li>
+		<li>
+			Cada ação do usuário é interpretada pelo software...
+		</li>
+		<li>
+			...e conduzida pelo servidor...
+		</li>
+		<li>
+			...talvez...
+		</li>
+	</ul>
 </div>
-<div id="slide-4">
-	<div style="float:right; height:100%; margin:0 40px;">
-		<img src="image/client-server-network.svg" class="v-center" style="width: 500px; border-radius:100%; background-color:white;">
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<ul>
+		<li>
+			Perfeito pra web como imaginada por Berners-Lee.
+		</li>
+		<li>
+			Compatível com a exploração de "locais desconhecidos" e de "coisas novas".
+		</li>
+		<li>
+			Não requer conhecimento prévio ou programas pré-instalados.
+		</li>
+		<li>
+			Woohoo!
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<div class="t-center" style="margin-top:80px;">
+		<span class="inline-block bright-round-bg" style="width:500px;">
+			<img src="image/client-server-network.svg" height="500px">
+		</span>
 	</div>
-	<h1 class="no-margin-top" style="font-size:1.5em">
-		Modelo cliente-servidor
-	</h1>
-	<p>
-		No caso de servidores web,
-		os servidores não só arbitram a comunicação entre os peers,
-		mas também <i>servem</i> o código da aplicação
-		(HTML, CSS, JavaScript, etc)
-		para o navegador executar.
-	</p>
-	<p>
-		O navegador é apenas uma casca a ser preenchida com software
-		(normalmente proprietário)
-		vindo de algum servidor.
-	</p>
-	<p>
-		Naturalmente, servidores
-		<i>e seus operadores</i>
-		tem muito mais poder do que navegadores e,
-		por consequência, do que nós, <i>usuários</i>.
-	</p>
 </div>
-<div id="slide-5">
-	<h1 class="no-margin-top" style="font-size:1.5em">
+<div class="slide">
+	<h1 style="font-size:1.5em">
 		Modelo cliente-servidor
 	</h1>
-	<div class="t-center">
-		<img src="image/calf-cow.jpg" width="450px">
+	<ul>
+		<li>
+			Hoje, web = Plataforma de desenvolvimento de propósito geral.
+		</li>
+		<li>
+			Muitos sites não são bem "páginas", mas aplicativos...
+		</li>
+		<li>
+			Melhores e mais práticos do que aplicativos desktop.
+		</li>
+		<li>
+			Por isso, deixamos de lado aplicativos desktop
+			e confiamos na presença de sites que façam o que precisamos.
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<ul>
+		<li>
+			Ou seja...
+		</li>
+		<li>
+			Jogamos fora nossas ferramentas.
+		</li>
+		<li>
+			Pedimos encarecidamente pra que servidores façam o que precisamos.
+		</li>
+		<li>
+			E torcemos pra que eles sempre estejam lá,
+			funcionem da mesma forma de sempre
+			e não guardem informações pessoais sobre o uso que fazemos deles.
+		</li>
+		<li>
+			Woohoo? Uh-oh!
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<ul>
+		<li>
+			A plataforma web é <b>ótima</b>!
+		</li>
+		<li>
+			Mas depender de servidores pra tudo é uma péssima ideia.
+		</li>
+		<li>
+			Operadores tem muito poder sobre nossas vidas.
+		</li>
+		<li>
+			Mesmo que os de hoje sejam respeitosos,
+			não há garantia quanto a futuros operadores.
+		</li>
+		<li>
+			Aparentemente eu não sou o único a pensar que essa relação é uma má ideia...
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Modelo cliente-servidor
+	</h1>
+	<div class="t-center" style="margin-top:80px;">
+		<img src="image/calf-cow.jpg" height="350px">
 		<p>
-			Se fôssemos gado,
-			<br>essa relação poderia ser considerada saudável...
+			Se fôssemos gado, ela poderia ser considerada saudável.
+			<br>Mas somos gente...
 		</p>
 	</div>
 </div>
-<div id="slide-6">
-	<h1 class="no-margin-top" style="font-size:1.5em">
-		Modelo cliente-servidor
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		WebRTC ao resgate?
 	</h1>
-	<p>
-		O modelo cliente-servidor é muito útil e poderoso,
-		mas concentra poder demais nas mãos dos operadores dos servidores.
-		Eles podem:
-	</p>
 	<ul>
 		<li>
-			Monitorar nossas comunicações e censurar usuários.
+			Mais ou menos...
 		</li>
 		<li>
-			Impedir acesso baseado na nossa nacionalidade
-			(prática comum em jogos online e serviços de streaming).
+			Não resolve o problema... <i>(entraremos em detalhes mais tarde)</i>
 		</li>
 		<li>
-			Impedir o uso de software customizado,
-			já que o software é servido juntamente com o serviço prestado,
-			quase como uma venda casada.
+			...mas é um passo importante na direção certa.
 		</li>
 		<li>
-			Nos forçar atualizações de software desagradáveis.
-		</li>
-		<li>
-			Terminar o serviço a qualquer momento,
-			levando junto consigo qualquer comunidade criada em torno dele.
+			Portanto, <b>woohoo!</b>
 		</li>
 	</ul>
 </div>
-<div id="slide-7">
-	<h1 class="no-margin-top" style="font-size:1.5em">
-		Então... Modelo cliente-servidor ou P2P?
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Pequeno adendo: WebRTC + NW.js = Nirvana
 	</h1>
-	<p>
-		O modelo cliente-servidor não é sem seus méritos,
-		mas em vários casos ele não trás benefício algum para os usuários
-		ou para o desenvolvimento da aplicação.
-	</p>
-	<p>
-		Exemplos de aplicações que poderiam ser P2P,
-		mas que habitualmente utilizamos cliente-servidor
-		sem pensar duas vezes:
-	</p>
 	<ul>
 		<li>
-			Mensagens instantâneas.
+			É web, <b>mas...</b>
 		</li>
 		<li>
-			Transferência de arquivos.
+			Sem servidores ou operadores pra violar nossa privacidade
+			ou nos censurar.
 		</li>
 		<li>
-			Editores colaborativos.
+			Ou impor restrições artificiais.
 		</li>
 		<li>
-			Plataformas de ensino à distância.
+			Ou mudar os termos de uso sem aviso prévio.
 		</li>
 		<li>
-			Diversos tipos de jogos online (mesmo os que envolvem azar!)
+			Ou tirar o serviço do ar.
+		</li>
+		<li>
+			Etc.
 		</li>
 	</ul>
 </div>
-<div id="slide-8">
-	<h1 class="no-margin-top" style="font-size:1.5em">
-		Ok, mas P2P no browser?
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Pontos fortes do WebRTC
 	</h1>
-	<p>
-		Sim! Através de um padrão WebRTC:
-	</p>
 	<ul>
 		<li>
-			Iniciativa do Google para o Hangouts.
+			Aplicações multiusuário (online) hospedáveis em servidores estáticos de arquivos.
 		</li>
 		<li>
-			Originalmente projetado pra áudio e vídeo.
+			Como por exemplo o GitHub.
 		</li>
 		<li>
-			Mas, por onde passa áudio e vídeo, passa qualquer tipo de dado...
+			PeerJS torna isso muito fácil.
 		</li>
 		<li>
-			Strings (JSON), protocolos binários (Protobuf, BSON...) e até arquivos inteiros de qualquer formato.
-		</li>
-		<li>
-			A API pra esse tipo de comunicação é chamada <b>Data Channels</b>.
+			Que tal criarmos um sistema de chat por aqui mesmo?
 		</li>
 	</ul>
 </div>
-<div id="slide-9">
+<div class="slide">
 	<h1 class="no-margin-top" style="font-size:1.5em">
-		Processo de conexão
-	</h1>
-	<div class="t-center">
-		<img src="image/webrtc-peer-connection.png" style="border-radius:20px; border:10px solid grey;" height="300px">
-	</div>
-	<div class="t-center" style="margin-top:40px;">
-		<img src="image/webrtc-peer-communication.png" style="border-radius:20px; border:10px solid #39c0ba;" height="140px">
-	</div>
-</div>
-<div id="slide-10">
-	<h1 class="no-margin-top" style="font-size:1.5em">
-		Exemplo utilizando PeerJS
+		Chat utilizando PeerJS
 	</h1>
 	<div style="display:flex;">
 		<div style="width:33%;">
@@ -478,5 +567,254 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
 		</iframe>
 		<iframe class="ex1-iframe" style="width:33%; border:none; background-color:white;">
 		</iframe>
+	</div>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Pontos fortes do WebRTC
+	</h1>
+	<ul>
+		<li>
+			Também funciona em arquivos HTML locais.
+		</li>
+		<li>
+			Podem até ser enviados por e-mail,
+			como um programa qualquer.
+		</li>
+		<li>
+			Ótimo pra quem tá aprendendo a programar
+			e fica confuso com Nodes, NPMs, Expresses
+			ou, Deus proíba, LAMPs / WAMPs da vida...
+		</li>
+		<li>
+			Redes e gerenciamento de pacotes não são programação,
+			portanto não é divertido :-)
+		</li>
+		<li>
+			Podendo evitar, ótimo!
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Como WebRTC funciona?
+	</h1>
+	<ul>
+		<li>
+			Depende de alguns servidores...
+		</li>
+		<li>
+			De propósito geral,
+			que já existem e que podemos usar,
+			de graça,
+			sem precisar instalar qualquer coisa.
+		</li>
+		<li>
+			Servidores STUN (importantes até migrarmos totalmente pro IPv6).
+		</li>
+		<li>
+			E servidores de sinalização ("pontos de encontro" pra usuários).
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Como WebRTC funciona? - Servidores STUN
+	</h1>
+	<ul>
+		<li>
+			Endereços IPv4 são limitados.
+		</li>
+		<li>
+			LANs empregam NATs (Network Address Translators).
+		</li>
+		<li>
+			Navegadores atrás de NATs não sabem seu endereço IPv4 externo.
+		</li>
+		<li>
+			NATs não suportam conexões externas sem configuração manual.
+		</li>
+		<li>
+			E existem vários tipos de NAT...
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Como WebRTC funciona? - Servidores STUN
+	</h1>
+	<ul>
+		<li>
+			Usados pelo navegador pra descobrir seu endereço IP externo.
+		</li>
+		<li>
+			E pra descobrir o tipo de NAT da rede.
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Como WebRTC funciona? - Servidores de sinalização
+	</h1>
+	<ul>
+		<li>
+			Canal pra troca de dados antes da conexão P2P ser estabelecida.
+		</li>
+		<li>
+			Endereços IP internos e externos, chaves criptográficas, etc.
+		</li>
+		<li>
+			"Pontos de encontro" pra usuários.
+		</li>
+		<li>
+			Exemplo: PeerJS dá a usuários IDs que podem ser enviados pra amigos.
+		</li>
+		<li>
+			ID é utilizada pra localizar usuários e os respectivos dados pra abrir conexões.
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Como WebRTC funciona? - Abertura de conexões
+	</h1>
+	<div class="t-center">
+		<img src="image/webrtc-peer-connection.png" style="border-radius:20px; border:10px solid grey;" height="300px">
+	</div>
+	<div class="t-center" style="margin-top:40px;">
+		<img src="image/webrtc-peer-communication.png" style="border-radius:20px; border:10px solid #39c0ba;" height="140px">
+	</div>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Como WebRTC funciona? - Escalabilidade
+	</h1>
+	<ul>
+		<li>
+			Processo pode ser repetido (BitTorrent swarms?)
+		</li>
+		<li>
+			WebTorrent...
+		</li>
+		<li>
+			Navegadores podem limitar o número de conexões simultâneas.
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Origens do WebRTC e dos Data Channels
+	</h1>
+	<ul>
+		<li>
+			Iniciativa do Google para um Hangouts sem plugins.
+		</li>
+		<li>
+			Ou seja, comunicação em tempo real de áudio e vídeo.
+		</li>
+		<li>
+			Relevância de canais de dados arbitrários identificada pela W3C.
+		</li>
+		<li>
+			Data Channels: Strings e dados binários de qualquer tipo.
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Pontos fortes do WebRTC (mais!)
+	</h1>
+	<ul>
+		<li>
+			Menor latência possível entre usuários.
+		</li>
+		<li>
+			Possivelmente (não necessariamente) mais privacidade.
+		</li>
+		<li>
+			Transporte configurável.
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Pontos fortes do WebRTC (mais!)
+	</h1>
+	<ul>
+		<li>
+			<p>
+				Transporte configurável:
+			</p>
+			<ul>
+				<li>
+					Garantia de ordem de chegada de mensagens? Opção do programador.
+				</li>
+				<li>
+					Flood time.
+				</li>
+				<li>
+					Número máximo de tentativas de retransmissão.
+				</li>
+			</ul>
+		</li>
+		<li>
+			Muito relevante pra aplicações de tempo real, como jogos.
+		</li>
+		<li>
+			Nem WebSockets permite isso.
+		</li>
+		<li>
+			Woohoo!
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Infinitas possibilidades
+	</h1>
+	<ul>
+		<li>
+			Mensagens instantâneas.
+		</li>
+		<li>
+			Compartilhamento de arquivos de qualquer tipo.
+		</li>
+		<li>
+			Editores colaborativos (de texto, imagens, áudio, vídeo ou o que for).
+		</li>
+		<li>
+			Aceleradores de download e CDNs utilizando mecanismos similares a WebTorrent.
+		</li>
+		<li>
+			Plataformas de ensino à distância.
+		</li>
+		<li>
+			Consultórios online.
+		</li>
+		<li>
+			Não todos, mas diversos tipos de jogos online (até carteado).
+		</li>
+	</ul>
+</div>
+<div class="slide">
+	<h1 style="font-size:1.5em">
+		Watch Together
+	</h1>
+	<div class="t-center" style="margin-top:40px;">
+		<a href="http://n2liquid.github.io/watch-together/" target="_blank">
+			<img src="image/watch-together.png" height="500px">
+		</a>
+	</div>
+</div>
+<div class="slide" style="font-size:1.5em">
+	<div class="v-center">
+		<h1 class="t-center highlight" style="font-size:1.4em">
+			Que tal chegar em casa
+			<br>e fazer algo <b>massa demais</b>
+			<br>usando WebRTC hoje? ;-)
+		</h1>
+		<p class="t-center">
+			Obrigado pela atenção!
+		</p>
 	</div>
 </div>
