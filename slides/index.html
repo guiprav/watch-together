@@ -36,6 +36,11 @@
 		text-decoration: none;
 		color: inherit;
 	}
+	input,
+	textarea,
+	button {
+		font-size: inherit;
+	}
 	li + li {
 		margin-top: 5vh;
 	}
@@ -73,13 +78,18 @@
 	.active[id|="slide"] {
 		display: block;
 	}
-	#ex1-editor.fullscreen {
+	#ex1-editor {
+		display: none;
+	}
+	#ex1-editor.open {
+		display: block;
 		position: fixed;
 		left: 0;
 		top: 0;
 		right: 0;
 		bottom: 0;
 		height: 100vh !important;
+		margin: 0;
 		z-index: 10;
 	}
 </style>
@@ -110,6 +120,7 @@
 	w2gs.keyCodes = {};
 	w2gs.keyCodes.left = 37;
 	w2gs.keyCodes.right = 39;
+	w2gs.aceEditors = new WeakMap();
 	document.addEventListener('DOMContentLoaded', function() {
 		setInterval(function() {
 			var targetSlide = w2gs.targetSlide();
@@ -206,6 +217,12 @@
 	w2gs.previousSlide = function() {
 		w2gs.flipSlides(-1);
 	};
+	w2gs.openEditor = function(editor) {
+		var aceEditor = w2gs.aceEditors.get(editor);
+		editor.classList.add('open');
+		aceEditor.resize();
+		aceEditor.focus();
+	};
 	document.addEventListener('DOMContentLoaded', function() {
 		var editor = $('#ex1-editor');
 		var iframes = $$('.ex1-iframe');
@@ -213,6 +230,7 @@
 		aceEditor.renderer.setShowGutter(false);
 		aceEditor.setTheme('ace/theme/twilight');
 		aceEditor.getSession().setMode('ace/mode/html');
+		w2gs.aceEditors.set(editor, aceEditor);
 		function updateIframes() {
 			[].forEach.call(iframes, function(iframe) {
 				iframe.srcdoc = (
@@ -240,16 +258,18 @@
 		}
 		updateIframes();
 		aceEditor.commands.addCommand ({
-			name: "Update Iframe",
+			name: "Save",
 			bindKey: 'Ctrl-Enter',
-			exec: updateIframes,
+			exec: function() {
+				editor.classList.remove('open');
+				updateIframes();
+			},
 		});
 		aceEditor.commands.addCommand ({
-			name: "Go fullscreen",
-			bindKey: 'Ctrl-M',
+			name: "Minimize",
+			bindKey: 'Esc',
 			exec: function() {
-				editor.classList.toggle('fullscreen');
-				aceEditor.resize();
+				editor.classList.remove('open');
 			},
 		});
 	});
@@ -517,9 +537,7 @@
 	<h1 class="no-margin-top" style="font-size:1.5em">
 		Chat utilizando PeerJS
 	</h1>
-	<div style="display:flex;">
-		<div style="width:33%;">
-			<pre id="ex1-editor" style="height:400px; font-size:inherit;">&lt;script src="vendor/peerjs/peer.js">&lt;/script>
+	<pre id="ex1-editor" style="height:400px; font-size:inherit;">&lt;script src="vendor/peerjs/peer.js">&lt;/script>
 
 Minha ID: &lt;span id="minha-id">&lt;/span>
 
@@ -594,11 +612,16 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
         conexao.on('data', mostrar);
     });
 &lt;/script></pre>
-		</div>
-		<iframe class="ex1-iframe" style="width:33%; border:none; background-color:white;">
+	<div style="display:flex; height:400px;">
+		<iframe class="ex1-iframe" style="width:50%; border:10px solid #39c0ba; background-color:white;">
 		</iframe>
-		<iframe class="ex1-iframe" style="width:33%; border:none; background-color:white;">
+		<iframe class="ex1-iframe" style="width:50%; border:10px solid #39c0ba; border-left:none; background-color:white;">
 		</iframe>
+	</div>
+	<div class="t-center" style="margin-top:40px;">
+		<button onclick="w2gs.openEditor($('#ex1-editor'))">
+			Editar
+		</button>
 	</div>
 </div>
 <div class="slide">
