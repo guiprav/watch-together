@@ -10,10 +10,12 @@
 	body {
 		height: 100%;
 	}
+	html {
+		font-size: 30px;
+	}
 	body {
 		margin: 0;
 		font-family: "Open Sans";
-		font-size: 4vmin;
 		color: white;
 		background-color: #2e3037;
 	}
@@ -99,6 +101,12 @@
 </script>
 <script>
 	'use strict';
+	document.addEventListener('DOMContentLoaded', function() {
+		document.body.style.fontSize = '1em';
+	});
+</script>
+<script>
+	'use strict';
 	w2gs.keyCodes = {};
 	w2gs.keyCodes.left = 37;
 	w2gs.keyCodes.right = 39;
@@ -117,6 +125,9 @@
 		}, 100);
 	});
 	document.addEventListener('keypress', function(event) {
+		if(event.target.closest('textarea, input, pre')) {
+			return;
+		}
 		switch(event.keyCode) {
 			case w2gs.keyCodes.left:
 				w2gs.previousSlide();
@@ -125,12 +136,33 @@
 				w2gs.nextSlide();
 				return;
 		}
-		switch(event.which) {
+		switch(String.fromCharCode(event.which)) {
+			case '0':
+				w2gs.setFontSize(1);
+				return;
 			case '-':
-				console.log($('body').style.fontSize);
+				w2gs.addFontSize(-0.2);
+				return;
+			case '+':
+				w2gs.addFontSize(0.2);
 				return;
 		}
 	});
+	w2gs.setFontSize = function(value) {
+		document.body.style.fontSize = value + 'em';
+	};
+	w2gs.addFontSize = function(change) {
+		var size = parseFloat(document.body.style.fontSize);
+		size += change;
+		if(size < 0) {
+			size = 0;
+		}
+		else
+		if(size > 10) {
+			size = 10;
+		}
+		w2gs.setFontSize(size);
+	};
 	w2gs.targetSlideId = function() {
 		return window.location.hash.slice(1) || 'slide-0';
 	};
@@ -263,8 +295,8 @@
 		P2P?
 	</h1>
 	<div class="t-center" style="margin-top:80px;">
-		<span class="inline-block bright-round-bg" style="width:500px;">
-			<img src="image/p2p-network.svg" height="500px">
+		<span class="inline-block bright-round-bg" style="width:450px;">
+			<img src="image/p2p-network.svg" height="450px">
 		</span>
 	</div>
 </div>
@@ -333,8 +365,8 @@
 		Modelo cliente-servidor
 	</h1>
 	<div class="t-center" style="margin-top:80px;">
-		<span class="inline-block bright-round-bg" style="width:500px;">
-			<img src="image/client-server-network.svg" height="500px">
+		<span class="inline-block bright-round-bg" style="width:450px;">
+			<img src="image/client-server-network.svg" height="450px">
 		</span>
 	</div>
 </div>
@@ -802,7 +834,7 @@ Minha ID: &lt;span id="minha-id">&lt;/span>
 	</h1>
 	<div class="t-center" style="margin-top:40px;">
 		<a href="http://n2liquid.github.io/watch-together/" target="_blank">
-			<img src="image/watch-together.png" height="500px">
+			<img src="image/watch-together.png" height="450px">
 		</a>
 	</div>
 </div>
